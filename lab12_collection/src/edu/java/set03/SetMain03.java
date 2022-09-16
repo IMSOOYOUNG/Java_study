@@ -15,6 +15,7 @@ public class SetMain03 {
         
         while(setSize < 5) {
             set.add(random.nextInt(0, 10));
+            System.out.println(set);
             setSize = set.size();
         }
         
