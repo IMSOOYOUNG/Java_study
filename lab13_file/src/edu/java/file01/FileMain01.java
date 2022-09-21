@@ -41,6 +41,7 @@ public class FileMain01 {
             // data 폴더에 test_copy.txt 파일을 쓰기 위한 스트림 객체 생성
             out = new FileOutputStream("data/test_copy.txt");
             
+            
             // 파일 복사 시작 시간 측정.
             long startTime = System.currentTimeMillis();
             
