@@ -19,41 +19,69 @@ public class LambdaMain04 {
         );
         
         // Ex 1. 모든 직원들의 정보를 한 줄에 한 명씩 출력.
-        for(Employee x : employees) {
-            System.out.println("직원들의 정보 : " + x);
-        }
-        System.out.println();
+        System.out.println("\nEx 1.-----------");
+
+//        for(Employee x : employees) {
+//            System.out.println(x);
+//        }        
+         
+//        employees.stream().forEach( x -> System.out.println(x) );
+        employees.stream().forEach(System.out::println );
         
         // Ex 2. job이 "개발자"인 직원들의 급여 합계를 출력.
-        int result = 0;
-        for(Employee x : employees) {
-            if(x.getJob().equals("개발자")) {
-                result += x.getSalary();
-            }
-        }
-        System.out.println("개발자인 직원들의 급여 합 : " + result);
+        System.out.println("\nEx 2.-----------");
+        
+        int sum = 0;
+//        for(Employee x : employees) {
+//            if (x.getJob().equals("개발자")) {
+//                sum += x.getSalary();
+//            }
+//        }
+//        System.out.println("개발자인 직원들의 급여 합 : " + sum);
+        
+        sum = employees.stream()
+                .filter(e -> e.getJob().equals("개발자"))
+                .mapToInt(Employee::getSalary)
+//                .mapToInt(e -> e.getSalary())
+                .sum();
+        System.out.println("sum = " + sum);        
 
         // Ex 3. dept가 "개발2팀'인 직원들의 급여 평균을 출력.
-        result = 0;
+        System.out.println("\nEx 3.-----------");
+        
+        sum = 0;
         int count = 0;
-        for(Employee x : employees) {
-            if(x.getDept().equals("개발2팀")) {
-                result += x.getSalary();
-                count++;
-            }
-        }
-        System.out.println("개발2팀 직원들의 급여 평균 : " + result / count);
+//        for(Employee x : employees) {
+//            if(x.getDept().equals("개발2팀")) {
+//                sum += x.getSalary();
+//                count++;
+//            }
+//        }
+        double mean = (double) sum / count;
+                
+        mean = employees.stream()
+                .filter(x -> x.getDept().equals("개발2팀"))
+                .mapToInt(x -> x.getSalary())
+                .average()
+//                .getAsDouble(); // Optional -> Double
+//                .orElse(0); // Optional -> 정상적인 값 또는 비정상일 경우 기본값.
+                .orElseThrow(); // Optional -> 정상적인 값 또는 Exception
+        
+        System.out.println("mean = " + mean);
+        
 
         // Ex 4. 급여가 400 이상인 직원들의 정보를 한 줄씩 출력.
-        List<Employee> resultList = new ArrayList<>();
-        resultList = employees.stream()
-                .filter( x -> x.getSalary() >= 400 )
-                .collect(Collectors.toList());
+        System.out.println("\nEx 4.-----------");
         
-        for(Employee x : resultList) {
-            System.out.println("급여가 400이상인 직원들의 정보 : " + x);
-        }
+//        for (Employee e : employees) {
+//            if(e.getSalary() >= 400) {
+//                System.out.println(e);
+//            }
+//        }
         
+        employees.stream()
+            .filter( x -> x.getSalary() >= 400 )
+            .forEach(System.out::println);
         
     }
 
