@@ -56,7 +56,7 @@ public class ContactCreateFrame extends JFrame {
      * Initialize UI components
      */
     private void initialize() {
-        setTitle("새 연락처 추가");
+        setTitle("새 연락처 추가"); // JFrame의 타이틀 설정.
         // 닫기 버튼을 클릭했을 때의 기본 동작 설정 - 현재 창만 닫기
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
@@ -136,11 +136,12 @@ public class ContactCreateFrame extends JFrame {
         // Contact 객체 생성
         Contact contact = new Contact(name, phone, email);
         
-        // 새 연락처가 생성됐음을 알려줌. (ContactMain에게) 알려줌.
-        listener.contactInsertNotify(contact);
-        
         // 현재 창 닫기
         dispose();
+        
+        // 새 연락처가 생성됐음을 알려줌. (ContactMain에게) 알려줌.
+        listener.contactInsertNotify(contact);        
+        
     }
 
 }

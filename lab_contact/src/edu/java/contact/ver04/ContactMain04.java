@@ -98,7 +98,7 @@ public class ContactMain04 {
         
         Contact c = new Contact(name, phone, email);
         
-        int result = dao.creat(c);
+        int result = dao.create(c);
         System.out.println("새 연락처 저장 성공");
     }
 

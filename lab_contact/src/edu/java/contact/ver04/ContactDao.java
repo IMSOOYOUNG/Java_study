@@ -27,7 +27,7 @@ public interface ContactDao {
      * @param contact 리스트에 추가(add)할 연락처 정보.
      * @return 리스트에 저장 성공하면 1, 그렇지 않으면 0.
      */
-    int creat(Contact contact);
+    int create(Contact contact);
     
     /**
      * 연락처 정보 업데이트 기능.

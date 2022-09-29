@@ -43,7 +43,7 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     @Override
-    public int creat(Contact contact) {
+    public int create(Contact contact) {
         contacts.add(contact);
         
         // 새로운 데이터가 추가된 후, 파일과 동기화하기 위해서 파일에 데이터를 저장.
