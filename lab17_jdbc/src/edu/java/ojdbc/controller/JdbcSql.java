@@ -14,7 +14,7 @@ public interface JdbcSql {
     String  SQL_INSERT = String.format("insert into %s (%s, %s, %s) values (?, ?, ?)", TBL_BLOGS, COL_TITLE, COL_CONTENT, COL_AUTHOR);
     
     // 블로그 글 업데이트(수정).
-    String SQL_UPDATE = String.format("update $s set %s = ?, %s = ?, %s = sysdate where %s = ?", TBL_BLOGS, COL_TITLE, COL_CONTENT, COL_MODIFIED_DATE, COL_BLOG_NO);
+    String SQL_UPDATE = String.format("update %s set %s = ?, %s = ?, %s = sysdate where %s = ?", TBL_BLOGS, COL_TITLE, COL_CONTENT, COL_MODIFIED_DATE, COL_BLOG_NO);
     
     // 블로그 글 삭제.
     String SQL_DELETE = String.format("delete %s where %s = ?", TBL_BLOGS, COL_BLOG_NO);

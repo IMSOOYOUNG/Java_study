@@ -6,13 +6,13 @@ import java.time.LocalDateTime;
 public class Blog {
     
     public interface Entity {
-        String TBL_BLOGS = "BLOGS"; // 테이블 이름
-        String COL_BLOG_NO = "BLOG_NO"; // 컬럼 이름 - 블로그 글 번호
-        String COL_TITLE = "TITLE"; // 블로그 글 제목
-        String COL_CONTENT = "CONTENT"; // 블로그 글 내용(본문)
-        String COL_AUTHOR = "AUTHOR"; // 블로그 글 작성자
-        String COL_CREATE_DATE = "CREATED_DATE"; // 블로그 글 작성 시간
-        String COL_MODIFIED_DATE = "MODIFIED_DATE"; // 블로그 글 수정 시간
+        String TBL_BLOGS            = "BLOGS"; // 테이블 이름
+        String COL_BLOG_NO          = "BLOG_NO"; // 컬럼 이름 - 블로그 글 번호
+        String COL_TITLE            = "TITLE"; // 블로그 글 제목
+        String COL_CONTENT          = "CONTENT"; // 블로그 글 내용(본문)
+        String COL_AUTHOR           = "AUTHOR"; // 블로그 글 작성자
+        String COL_CREATE_DATE      = "CREATED_DATE"; // 블로그 글 작성 시간
+        String COL_MODIFIED_DATE    = "MODIFIED_DATE"; // 블로그 글 수정 시간
     }
     
     private Integer blogNo;
