@@ -131,7 +131,7 @@ public class BlogMain implements OnBlogInsertListener, OnBlogUpdateListener {
     private void showDetailFrame() {
        int row = table.getSelectedRow();
        if (row == -1) {
-           JOptionPane.showInternalMessageDialog(frame, // parentComponent
+           JOptionPane.showMessageDialog(frame, // parentComponent
                    "테이블의 행을 먼저 선택하세요.", // message
                    "Error", // title
                    JOptionPane.ERROR_MESSAGE); // messageType
