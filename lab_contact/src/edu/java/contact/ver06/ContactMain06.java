@@ -7,6 +7,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -17,15 +19,19 @@ import edu.java.contact.ver06.ContactUpdateFrame.OnContactUpdateListener;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
 
 public class ContactMain06 implements OnContactCreateListener, OnContactUpdateListener{
-    private static final String[] COLUME_NAMES = {"번호", "이름", "전화번호", "이메일"};
+    private static final String[] COLUMN_NAMES = {"번호", "이름", "전화번호", "이메일"};
     
     private JFrame frame;
     private JTable table;
     private DefaultTableModel model;
+    private JComboBox comboBox;
     
     private ContactDaoImpl dao;
+    private JTextField textKeyword;
 
     /**
      * Launch the application.
@@ -54,7 +60,7 @@ public class ContactMain06 implements OnContactCreateListener, OnContactUpdateLi
     }
 
     private void initializeable() {
-        model = new DefaultTableModel(null, COLUME_NAMES);
+        model = new DefaultTableModel(null, COLUMN_NAMES);
         
         table.setModel(model);
         
@@ -76,6 +82,15 @@ public class ContactMain06 implements OnContactCreateListener, OnContactUpdateLi
         
         JPanel buttonPanel = new JPanel();
         frame.getContentPane().add(buttonPanel, BorderLayout.NORTH);
+        
+        JButton btnReadAll = new JButton("전체 보기");
+        btnReadAll.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		initializeable();
+        	}
+        });
+        buttonPanel.add(btnReadAll);
         
         JButton btnCreate = new JButton("새 연락처");
         btnCreate.addActionListener(new ActionListener() {
@@ -104,19 +119,63 @@ public class ContactMain06 implements OnContactCreateListener, OnContactUpdateLi
         });
         buttonPanel.add(btnDelete);
         
-        JButton btnSearch = new JButton("연락처 검색");
-        buttonPanel.add(btnSearch);
+        
         
         JScrollPane scrollPane = new JScrollPane();
         frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
         
         table = new JTable();
-        model = new DefaultTableModel(null, COLUME_NAMES);
+        model = new DefaultTableModel(null, COLUMN_NAMES);
         table.setModel(model);
         scrollPane.setViewportView(table);
+        
+        JPanel SearchPanel = new JPanel();
+        frame.getContentPane().add(SearchPanel, BorderLayout.SOUTH);
+        
+        comboBox = new JComboBox();
+        String[] comboBoxItems = {"이름", "내용"};
+        DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>(comboBoxItems);
+        comboBox.setModel(comboBoxModel);
+        SearchPanel.add(comboBox);
+        
+        textKeyword = new JTextField();
+        SearchPanel.add(textKeyword);
+        textKeyword.setColumns(10);
+        
+        JButton btnSearch = new JButton("검색");
+        btnSearch.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		SearchContactByKeyword();
+        	}
+        });
+        SearchPanel.add(btnSearch);
     }
 
-    private void deleteContact() {
+    private void SearchContactByKeyword() {
+		String keyword = textKeyword.getText();
+		if (keyword.equals("") ) { 
+            JOptionPane.showMessageDialog(frame,
+                    "검색어를 입력하세요.",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);            
+            return;
+        }
+		
+		int type = comboBox.getSelectedIndex();
+        System.out.println("type = " + type + ", keyword = " + keyword);
+	
+        List<Contact> list = dao.select(type, keyword);
+        
+        model = new DefaultTableModel(null, COLUMN_NAMES);
+        table.setModel(model);  
+        System.out.println(list);
+        for(Contact c : list) {
+            Object[] row = {c.getCid(), c.getName(), c.getPhone(), c.getEmail()};
+            model.addRow(row);
+        }
+	}
+
+	private void deleteContact() {
         int row = table.getSelectedRow();
         if (row == -1) {
             JOptionPane.showMessageDialog(frame,

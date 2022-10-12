@@ -23,5 +23,11 @@ public interface ContactSql {
     // delete from CONTACTS where CID = ?
     String SQL_DELETE = String.format("delete from %s where %s = ?", TBL_CONTACTS, COL_CID);
     
+    // 이름으로 검색하기
+    String SQL_SELECT_BY_NAME = String.format("select * from %s where lower(%s) like ? order by %s", TBL_CONTACTS, COL_NAME, COL_NAME);
+    
+    // 내용으로 검색하기
+    String SQL_SELECT_BY_PHONE = String.format("select * from %s where lower(%s) like ? order by %s", TBL_CONTACTS, COL_PHONE, COL_NAME);
+    
     
 }

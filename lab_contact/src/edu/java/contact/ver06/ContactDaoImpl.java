@@ -200,6 +200,59 @@ public class ContactDaoImpl implements ContactDao {
         return result;
     }
     
+    @Override
+    public List<Contact> select(int type, String keyword) {
+    	List<Contact> list = new ArrayList<>();
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+    	
+        try {
+			conn = getConnection();
+			
+			switch (type) {
+            case 0: // 제목 검색
+                System.out.println(SQL_SELECT_BY_NAME);
+                stmt = conn.prepareStatement(SQL_SELECT_BY_NAME);
+                stmt.setString(1, "%" + keyword.toLowerCase() + "%");
+                System.out.println("%" + keyword.toLowerCase() + "%");
+                break;
+            case 1: // 내용 검색
+                System.out.println(SQL_SELECT_BY_PHONE);
+                stmt = conn.prepareStatement(SQL_SELECT_BY_PHONE);
+                stmt.setString(1, "%" + keyword.toLowerCase() + "%");
+                break;
+            default:
+			
+			}
+			
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				Integer no = rs.getInt(COL_CID);
+                String name = rs.getString(COL_NAME);
+                String phone = rs.getString(COL_PHONE);
+                String email = rs.getString(COL_EMAIL);
+                
+                Contact contact = new Contact(no, name, phone, email);
+                list.add(contact);
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeResources(conn, stmt, rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+    	
+    	return list;
+    }
+    
+    
     private Connection getConnection() throws SQLException {
         DriverManager.registerDriver(new OracleDriver());
         
