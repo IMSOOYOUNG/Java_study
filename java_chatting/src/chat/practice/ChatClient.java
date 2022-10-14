@@ -27,13 +27,12 @@ public class ChatClient extends JFrame {
     /**
      * Launch the application.
      */
-    public static void main(String[] args) {
+    public static void newClient() {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
                     ChatClient frame = new ChatClient();
                     frame.setVisible(true);
-                    frame.setSocket();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -46,7 +45,6 @@ public class ChatClient extends JFrame {
      */
     public ChatClient() {
         initialize();
-//        setSocketServer();
     }
     
     public void initialize() {

@@ -18,7 +18,7 @@ public class ClientEx {
         Scanner sc = new Scanner(System.in);
                 
         try {
-            socket = new Socket("localhost", 9999);
+            socket = new Socket("localhost", 1001);
             
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));

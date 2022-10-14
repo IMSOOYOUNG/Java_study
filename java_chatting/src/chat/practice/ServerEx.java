@@ -19,7 +19,7 @@ public class ServerEx {
         Scanner sc = new Scanner(System.in);
                 
         try {
-            server = new ServerSocket(9999);
+            server = new ServerSocket(1001);
             System.out.println("연결 대기중...");
             
             socket = server.accept();

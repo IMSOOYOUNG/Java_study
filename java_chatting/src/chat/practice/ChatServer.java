@@ -35,13 +35,12 @@ public class ChatServer extends JFrame {
     /**
      * Launch the application.
      */
-    public static void main(String[] args) {
+    public static void newServer() {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
                     ChatServer frame = new ChatServer();
                     frame.setVisible(true);
-                    frame.setSocket();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -54,8 +53,9 @@ public class ChatServer extends JFrame {
      */
     public ChatServer() {
         initialize();
+        setSocket();
     }
-    
+
     public void initialize() {
         setTitle("채팅");
         
@@ -88,6 +88,8 @@ public class ChatServer extends JFrame {
             }
         });
         panel.add(btnSend);
+        
+       
     }
     
     
