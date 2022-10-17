@@ -41,6 +41,7 @@ public class LoginPage {
      * Create the application.
      */
     public LoginPage() {
+        //
     	dao = MemberDaoImpl.getInstance();
     	
         initialize();
