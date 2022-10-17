@@ -200,6 +200,7 @@ public class MemberJoin extends JFrame {
         	}
         	JOptionPane.showMessageDialog(this, "회원가입되었습니다.");
         	this.dispose();
+        	
         }
         
         
