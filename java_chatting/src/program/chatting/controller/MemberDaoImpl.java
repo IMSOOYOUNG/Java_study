@@ -88,8 +88,8 @@ public class MemberDaoImpl implements MemberDao {
 			stmt.setString(2, member.getIdentity());
 			stmt.setString(3, member.getPassword());
 			System.out.println(SQL_INSERT);
-			
 			result = stmt.executeUpdate();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -182,7 +182,7 @@ public class MemberDaoImpl implements MemberDao {
 	}
 	
 	@Override
-	public List<Member> selectNickname(String text) {
+	public List<Member> selectNickname(String text, String id) {
 	    List<Member> list = new ArrayList<>();
 	    
 	    Connection conn = null;
@@ -195,6 +195,7 @@ public class MemberDaoImpl implements MemberDao {
             
             stmt = conn.prepareStatement(SELECT_BY_NICKNAME);
             stmt.setString(1, "%" + text + "%");
+            stmt.setString(2, id);
 
             rs = stmt.executeQuery();
             while (rs.next()) {
@@ -263,7 +264,7 @@ public class MemberDaoImpl implements MemberDao {
 	
 
     @Override
-    public List<Member> select_to_memberFriend(int no) {
+    public List<Member> select_to_memberFriend(String text) {
         List<Member> list = new ArrayList<>();
         
         Connection conn = null;
@@ -275,16 +276,15 @@ public class MemberDaoImpl implements MemberDao {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             
             stmt = conn.prepareStatement(SELECT_BY_MEMBER_NO);
-            stmt.setInt(1, no);
+            stmt.setString(1, text);
             
-            System.out.println(SELECT_BY_MEMBER_NO);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                int member_no = rs.getInt(COL_MEMBER_NO);
+                int member_no   = rs.getInt(COL_MEMBER_NO);
                 String nickname = rs.getString(COL_NICKNAME);
                 String identity = rs.getString(COL_IDENTITY);
                 String password = rs.getString(COL_PASSWORD);
-                int port_no = rs.getInt(COL_PORT_NO);
+                int port_no     = rs.getInt(COL_PORT_NO);
                 
                 Member member = new Member(member_no, nickname, identity, password, port_no);
                 list.add(member);
@@ -296,6 +296,148 @@ public class MemberDaoImpl implements MemberDao {
             try {
                 rs.close();
                 stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return list;
+    }
+
+   
+    @Override
+    public int select_member_nickname(String text1, String text2) {
+        int result = 0;
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            DriverManager.registerDriver(new OracleDriver());
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            stmt = conn.prepareStatement(SELECT_MEMBER_NICKNAME_BY_FRIEND_NICKNAME);
+            stmt.setString(1, text1);
+            stmt.setString(2, text2);
+            
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                result = 1;
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return result;
+    }
+
+    
+    @Override
+    public int insert_friend(String text1, String text2) {
+        int result = 0;
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            DriverManager.registerDriver(new OracleDriver());
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            stmt = conn.prepareStatement(INSERT_FRIEND);
+
+            System.out.println(INSERT_FRIEND);
+            System.out.println(text1);
+            System.out.println(text2);
+            stmt.setString(1, text1);
+            stmt.setString(2, text2);
+            
+            result = stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return result;
+    }
+
+    
+    @Override
+    public int delete_friend(String text1, String text2) {
+        int result = 0;
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            DriverManager.registerDriver(new OracleDriver());
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            stmt = conn.prepareStatement(DELETE_FRIEND);
+            stmt.setString(1, text1);
+            stmt.setString(2, text2);
+            
+            result = stmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return result;
+    }
+
+   
+    @Override
+    public List<Member> select_all_execept_user(String text) {
+        List<Member> list = new ArrayList<>();
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            DriverManager.registerDriver(new OracleDriver());
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            stmt = conn.prepareStatement(SELECT_ALL_EXECEPT_USER);
+            stmt.setString(1, text);
+            
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                int member_no   = rs.getInt(COL_MEMBER_NO);
+                String nickname = rs.getString(COL_NICKNAME);
+                String identity = rs.getString(COL_IDENTITY);
+                String password = rs.getString(COL_PASSWORD);
+                int port_no     = rs.getInt(COL_PORT_NO);
+                
+                Member member = new Member(member_no, nickname, identity, password, port_no);
+                
+                list.add(member);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
                 conn.close();
             } catch (SQLException e) {
                 e.printStackTrace();

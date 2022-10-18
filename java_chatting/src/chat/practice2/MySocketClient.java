@@ -9,7 +9,7 @@ public class MySocketClient {
     public static void main(String[] args) {
         try {
             Socket socket = null;
-                    // 소켓 서버에 접속
+            // 소켓 서버에 접속
             socket = new Socket("localhost", 1234); 
             System.out.println("서버에 접속 성공!"); // 접속 확인용
             

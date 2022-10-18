@@ -35,7 +35,7 @@ public class ChatServer extends JFrame {
     /**
      * Launch the application.
      */
-    public static void newServer() {
+    public static void main() {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {

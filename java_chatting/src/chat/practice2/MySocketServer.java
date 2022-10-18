@@ -19,7 +19,7 @@ public class MySocketServer extends Thread {
         list.add(socket); // 유저를 list에 추가
     }
         // Thread 에서 start() 메소드 사용 시 자동으로 해당 메소드 시작 (Thread별로 개별적 수행)
-        public void run() {
+    public void run() {
         try {
                 // 연결 확인용
             System.out.println("서버 : " + socket.getInetAddress() 
@@ -60,22 +60,22 @@ public class MySocketServer extends Thread {
         } catch (Exception e) {
             e.printStackTrace(); // 예외처리
         }           
-        }   
+    }   
     
     public static void main(String[] args) {
-            try {
-                      int socketPort = 1234; // 소켓 포트 설정용
-                      ServerSocket serverSocket = new ServerSocket(socketPort); // 서버 소켓 만들기
-                      // 서버 오픈 확인용
-                      System.out.println("socket : " + socketPort + "으로 서버가 열렸습니다");
-            
-                      // 소켓 서버가 종료될 때까지 무한루프
-                      while(true) {
-                          Socket socketUser = serverSocket.accept(); // 서버에 클라이언트 접속 시
-                          // Thread 안에 클라이언트 정보를 담아줌
-                          Thread thd = new MySocketServer(socketUser);
-                          thd.start(); // Thread 시작
-                      }                 
+        try {
+              int socketPort = 1234; // 소켓 포트 설정용
+              ServerSocket serverSocket = new ServerSocket(socketPort); // 서버 소켓 만들기
+              // 서버 오픈 확인용
+              System.out.println("socket : " + socketPort + "으로 서버가 열렸습니다");
+    
+              // 소켓 서버가 종료될 때까지 무한루프
+              while(true) {
+                  Socket socketUser = serverSocket.accept(); // 서버에 클라이언트 접속 시
+                  // Thread 안에 클라이언트 정보를 담아줌
+                  Thread thd = new MySocketServer(socketUser);
+                  thd.start(); // Thread 시작
+              }                 
             
         } catch (IOException e) {
             e.printStackTrace(); // 예외처리

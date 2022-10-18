@@ -27,7 +27,7 @@ public class ChatClient extends JFrame {
     /**
      * Launch the application.
      */
-    public static void newClient() {
+    public static void main() {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {

@@ -55,8 +55,8 @@ public class ChatMain {
     private MemberDaoImpl dao;
     private Component parent;
     
-    private int member_no;
-    private String nickname;
+    private int user_member_no;
+    private String user_nickname;
     private String userId;
     
     
@@ -67,7 +67,7 @@ public class ChatMain {
     private JButton btnDeleteFriend;
     private JButton btnChatting;
     
-
+    
     /**
      * Launch the application.
      */
@@ -98,8 +98,8 @@ public class ChatMain {
         for (Member m : list) {
             lblUser.setText("<" + m.getNickname() + ">님");
             
-            this.nickname = m.getNickname();
-            this.member_no = m.getMember_no();
+            this.user_nickname = m.getNickname();
+            this.user_member_no = m.getMember_no();
         }
         
         initializeTable();
@@ -108,7 +108,7 @@ public class ChatMain {
     private void initializeTable() {
         model = new DefaultTableModel(null, COLUME_NAMES);
 
-        List<Member> list = dao.select();
+        List<Member> list = dao.select_all_execept_user(userId);
         for(Member m : list) {
             Object[] row = {m.getIdentity(), m.getNickname()};
             model.addRow(row);
@@ -203,7 +203,7 @@ public class ChatMain {
         btnDeleteFriend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                deleteFriend();
             }
         });
         
@@ -211,7 +211,7 @@ public class ChatMain {
         btnChatting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            
+                chatting();
             }
         });
         panel_1.setLayout(new GridLayout(0, 3, 0, 0));
@@ -220,10 +220,74 @@ public class ChatMain {
         panel_1.add(btnChatting);
     }
 
-    private void addFriend() { // 친구 추가
-        
+    private void chatting() {
+        ChatFrame.newChatFrame();
     }
 
+    private void deleteFriend() { // 친구 삭제
+        // 1. 선택한 행의 닉네임을 조회
+        int row = table.getSelectedRow();
+        String nickname = (String) model.getValueAt(row, 1);
+        
+        // 2. 닉네임이 내 친구 목록에 있는지 조회
+        int result = dao.select_member_nickname(user_nickname, nickname);
+        
+        // 3. 없으면 친구가 아니라는 메세지 창을 띄움
+        if (result == 0) {
+            JOptionPane.showMessageDialog(frame, "친구가 아닙니다.");
+            return;
+        }
+        
+        // 4. 있으면 삭제 여부 확인 후테이블에서 양쪽 모두 삭제
+        int confirm = JOptionPane.showConfirmDialog(
+                frame,
+                "친구 목록에서 삭제하시겠습니까?",
+                "친구 삭제",
+                JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.NO_OPTION) {
+            return;
+        }
+        
+        int delete_result1 = dao.delete_friend(user_nickname, nickname);
+        int delete_result2 = dao.delete_friend(nickname, user_nickname);
+        
+        if (delete_result1 == 1 && delete_result2 == 1) {
+            JOptionPane.showMessageDialog(frame, "삭제 성공");
+            friendList();
+        }
+    }
+
+    private void addFriend() { // 친구 추가
+        // 1. 선택한 행의 닉네임을 조회
+        int row = table.getSelectedRow();
+        String nickname = (String) model.getValueAt(row, 1);
+        
+        // 2. 닉네임이 내 친구 목록에 있는지 조회 
+        int result = dao.select_member_nickname(user_nickname, nickname);
+        
+        // 3. 있으면 이미 친구라는 알림을 띄우고 종료
+        if (result == 1) {
+            JOptionPane.showMessageDialog(frame, "등록된 친구입니다.");
+            return;
+        }
+        
+        int confirm = JOptionPane.showConfirmDialog(
+                frame,
+                "친구 등록하시겠습니까?",
+                "친구 추가",
+                JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.NO_OPTION) {
+            return;
+        }
+        
+        // 4. 테이블에 insert하기 양쪽 다 <->
+        int insert_result1 = dao.insert_friend(user_nickname, nickname);
+        int insert_result2 = dao.insert_friend(nickname, user_nickname);
+        if (insert_result1 == 1 && insert_result2 == 1) {
+            JOptionPane.showMessageDialog(frame, "친구 목록에 추가 되었습니다.");
+        }
+    }
+    
     private void userSearch() { // 검색
         String text = textSearch.getText();
         if (text.equals("")) {
@@ -236,9 +300,9 @@ public class ChatMain {
         
         model = new DefaultTableModel(null, COLUME_NAMES);
         
-        List<Member> member = dao.selectNickname(text);
+        List<Member> member = dao.selectNickname(text, userId);
         for (Member m : member) {
-            Object[] row = {m.getIdentity(), m.getNickname()};
+            Object[] row = { m.getIdentity(), m.getNickname()};
             model.addRow(row);
         }
         table.setModel(model);
@@ -246,25 +310,25 @@ public class ChatMain {
         textSearch.setText("");
     }
     
-    private void readAll() { // 전체 검색
+    private void readAll() { // 모든 사용자
         initializeTable();
         btnReadAll.setBackground(new Color(255, 255, 255));
         btnReadFriend.setBackground(new Color(240, 240, 240));
     }
     
     private void friendList() { // 친구 목록
-        List<Member> member = dao.select_to_memberFriend(member_no);
-
+        btnReadFriend.setBackground(new Color(255, 255, 255));
+        btnReadAll.setBackground(new Color(240, 240, 240));
+        
         model = new DefaultTableModel(null, COLUME_NAMES);
+        
+        List<Member> member = dao.select_to_memberFriend(user_nickname);
         
         for(Member m : member) {
             Object[] row = {m.getIdentity(), m.getNickname()};
             model.addRow(row);
         }
         table.setModel(model);
-        
-        btnReadFriend.setBackground(new Color(255, 255, 255));
-        btnReadAll.setBackground(new Color(240, 240, 240));
     }
     
     
