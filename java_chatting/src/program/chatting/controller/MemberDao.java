@@ -86,4 +86,29 @@ public interface MemberDao {
      * @return
      */
     List<Member> select_all_execept_user(String text);
+    
+    /**
+     * 상대방 request 컬럼에 사용자의 포트번호 넣기
+     * @param port_no 포트 번호
+     * @param member_friend 상대방의 닉네임
+     * @return
+     */
+    int update_request_to_friend_port(int port_no, String member_nickname);
+    
+    /**
+     * 로그인 유저의 아이디 값으로 request값 확인
+     * @param identity 로그인 유저의 id
+     * @return
+     */
+    Member select_request(String identity);
+    
+    /**
+     * 해당 아이디의 request의 값을 비움
+     * @param identity
+     * @return
+     */
+    int update_request_to_null(String identity);
+    
+    
+    
 }

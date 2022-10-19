@@ -191,7 +191,7 @@ public class MemberJoin extends JFrame {
     			JOptionPane.YES_NO_OPTION);
     	
         if (confirm == JOptionPane.YES_OPTION) {
-        	Member member = new Member(0, nickname, identity, password, 0);
+        	Member member = new Member(0, nickname, identity, password, 0, 0);
         	
         	int result = dao.insert(member);
         	if (result == 0) {

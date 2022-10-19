@@ -8,8 +8,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,13 +17,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
-public class ChatClient {
+public class TestClient1 extends JFrame {
 
-    private JFrame frame;
     private JTextField textContent;
     private JTextArea textArea;
-
+    private JPanel contentPane;
+    
     Socket socket = null;
     BufferedReader in = null;
     BufferedWriter out = null;
@@ -31,43 +32,49 @@ public class ChatClient {
     /**
      * Launch the application.
      */
-    public static void main(String[] args) {
-
-        ChatClient window = new ChatClient();
-        window.frame.setVisible(true);
-        window.setClientSocket();
+    public static void main(String args[]) {
+        
+        TestClient1 frame = new TestClient1();
+        frame.setVisible(true);
+        frame.setSocketClient();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                frame.setSocketClient();
+//            }
+//        });
+        
     }
 
     /**
-     * Create the application.
+     * Create the frame.
      */
-    public ChatClient() {
+    public TestClient1() {
         initialize();
     }
 
-    /**
-     * Initialize the contents of the frame.
-     */
-    private void initialize() {
-        frame = new JFrame();
+    public void initialize() {
+        setTitle("채팅");
         
-        frame.setTitle("클라이언트");
-        
-        frame.setBounds(100, 100, 450, 468);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.getContentPane().setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 500);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
         
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(12, 10, 410, 346);
-        frame.getContentPane().add(scrollPane);
+        scrollPane.setBounds(12, 10, 410, 392);
+        contentPane.add(scrollPane);
         
         textArea = new JTextArea();
         textArea.setEditable(false);
         scrollPane.setViewportView(textArea);
         
         JPanel panel = new JPanel();
-        panel.setBounds(12, 376, 434, 43);
-        frame.getContentPane().add(panel);
+        panel.setBounds(12, 407, 410, 44);
+        contentPane.add(panel);
         panel.setLayout(null);
         
         textContent = new JTextField();
@@ -76,17 +83,17 @@ public class ChatClient {
         textContent.setColumns(10);
         
         JButton btnSend = new JButton("전송");
-        btnSend.setBounds(335, 0, 75, 32);
         btnSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sendMessage();
             }
         });
+        btnSend.setBounds(335, 0, 75, 32);
         panel.add(btnSend);
     }
 
-    private void sendMessage() {
+    private void sendMessage() { // 전송
         try {
             String outMessage = textContent.getText();
             out.write(outMessage + "\n");
@@ -98,13 +105,12 @@ public class ChatClient {
             e.printStackTrace();
         }
     }
-
     
-    public void setClientSocket() {
-                
+    public void setSocketClient() {
         try {
-            socket = new Socket("localhost", 1002);
+            socket = new Socket("localhost", 9999);
             textArea.append("연결 완료! \n");
+            
             
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));

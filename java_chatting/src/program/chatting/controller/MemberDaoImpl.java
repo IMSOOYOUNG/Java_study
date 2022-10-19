@@ -159,9 +159,10 @@ public class MemberDaoImpl implements MemberDao {
                 String nickname = rs.getString(COL_NICKNAME);
                 String identity = rs.getString(COL_IDENTITY);
                 String password = rs.getString(COL_PASSWORD);
-                int port_no = rs.getInt(COL_PORT_NO);
+                int port_no     = rs.getInt(COL_PORT_NO);
+                int request     = rs.getInt(COL_REQUEST);
                 
-                Member member = new Member(member_no, nickname, identity, password, port_no);
+                Member member = new Member(member_no, nickname, identity, password, port_no, request);
                 
                 list.add(member);
             }
@@ -204,8 +205,9 @@ public class MemberDaoImpl implements MemberDao {
                 String identity = rs.getString(COL_IDENTITY);
                 String password = rs.getString(COL_PASSWORD);
                 int port_no = rs.getInt(COL_PORT_NO);
+                int request = rs.getInt(COL_REQUEST);
                 
-                Member member = new Member(member_no, nickname, identity, password, port_no);
+                Member member = new Member(member_no, nickname, identity, password, port_no, request);
                 list.add(member);
             }
             
@@ -235,17 +237,18 @@ public class MemberDaoImpl implements MemberDao {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             
             stmt = conn.prepareStatement(SELECT_BY_IDENTITY);
-            stmt.setString(1, "%" + text + "%");
-
+            stmt.setString(1, text);
+            
             rs = stmt.executeQuery();
             while (rs.next()) {
-                int member_no = rs.getInt(COL_MEMBER_NO);
+                int member_no   = rs.getInt(COL_MEMBER_NO);
                 String nickname = rs.getString(COL_NICKNAME);
                 String identity = rs.getString(COL_IDENTITY);
                 String password = rs.getString(COL_PASSWORD);
-                int port_no = rs.getInt(COL_PORT_NO);
+                int port_no     = rs.getInt(COL_PORT_NO);
+                int request     = rs.getInt(COL_REQUEST);
                 
-                Member member = new Member(member_no, nickname, identity, password, port_no);
+                Member member = new Member(member_no, nickname, identity, password, port_no, request);
                 list.add(member);
             }
             
@@ -262,7 +265,6 @@ public class MemberDaoImpl implements MemberDao {
         return list;
 	}
 	
-
     @Override
     public List<Member> select_to_memberFriend(String text) {
         List<Member> list = new ArrayList<>();
@@ -285,8 +287,9 @@ public class MemberDaoImpl implements MemberDao {
                 String identity = rs.getString(COL_IDENTITY);
                 String password = rs.getString(COL_PASSWORD);
                 int port_no     = rs.getInt(COL_PORT_NO);
+                int request     = rs.getInt(COL_REQUEST);
                 
-                Member member = new Member(member_no, nickname, identity, password, port_no);
+                Member member = new Member(member_no, nickname, identity, password, port_no, request);
                 list.add(member);
             }
             
@@ -304,8 +307,7 @@ public class MemberDaoImpl implements MemberDao {
         
         return list;
     }
-
-   
+ 
     @Override
     public int select_member_nickname(String text1, String text2) {
         int result = 0;
@@ -340,7 +342,6 @@ public class MemberDaoImpl implements MemberDao {
         return result;
     }
 
-    
     @Override
     public int insert_friend(String text1, String text2) {
         int result = 0;
@@ -354,9 +355,6 @@ public class MemberDaoImpl implements MemberDao {
             
             stmt = conn.prepareStatement(INSERT_FRIEND);
 
-            System.out.println(INSERT_FRIEND);
-            System.out.println(text1);
-            System.out.println(text2);
             stmt.setString(1, text1);
             stmt.setString(2, text2);
             
@@ -375,7 +373,6 @@ public class MemberDaoImpl implements MemberDao {
         return result;
     }
 
-    
     @Override
     public int delete_friend(String text1, String text2) {
         int result = 0;
@@ -406,7 +403,6 @@ public class MemberDaoImpl implements MemberDao {
         return result;
     }
 
-   
     @Override
     public List<Member> select_all_execept_user(String text) {
         List<Member> list = new ArrayList<>();
@@ -428,9 +424,9 @@ public class MemberDaoImpl implements MemberDao {
                 String identity = rs.getString(COL_IDENTITY);
                 String password = rs.getString(COL_PASSWORD);
                 int port_no     = rs.getInt(COL_PORT_NO);
+                int request     = rs.getInt(COL_REQUEST);
                 
-                Member member = new Member(member_no, nickname, identity, password, port_no);
-                
+                Member member = new Member(member_no, nickname, identity, password, port_no, request);
                 list.add(member);
             }
             
@@ -446,8 +442,108 @@ public class MemberDaoImpl implements MemberDao {
         
         return list;
     }
+
+    
+    @Override
+    public int update_request_to_friend_port(int port_no, String member_nickname) {
+        int result = 0;
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            DriverManager.registerDriver(new OracleDriver());
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            stmt = conn.prepareStatement(UPDATE_REQUEST_TO_FRIEND_PORT);
+            stmt.setInt(1, port_no);
+            stmt.setString(2, member_nickname);
+            
+            result = stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return result;
+    }
+
+    @Override
+    public Member select_request(String identity) {
+        Member member = null;
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            DriverManager.registerDriver(new OracleDriver());
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            stmt = conn.prepareStatement(SELECT_REQUEST);
+            stmt.setString(1, identity);
+            
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                int member_no   = rs.getInt(COL_MEMBER_NO);
+                String nickname = rs.getString(COL_NICKNAME);
+                String id       = rs.getString(COL_IDENTITY);
+                String password = rs.getString(COL_PASSWORD);
+                int port_no     = rs.getInt(COL_PORT_NO);
+                int request     = rs.getInt(COL_REQUEST);
+                
+                member = new Member(member_no, nickname, id, password, port_no, request);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return member;
+    }
 	
-	
+    @Override
+    public int update_request_to_null(String identity) {
+        int result = 0 ;
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            DriverManager.registerDriver(new OracleDriver());
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            stmt = conn.prepareStatement(UPDATE_REQUEST_TO_NULL);
+            stmt.setString(1, identity);
+            
+            result = stmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return result;
+    }
 	
     
     

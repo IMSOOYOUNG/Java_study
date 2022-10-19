@@ -1,16 +1,7 @@
 package chat.practice;
 
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,14 +9,25 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import java.awt.event.ActionListener;
 
-public class ChatServer {
 
-    private JFrame frame;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.awt.event.ActionEvent;
+
+public class TestServer01 extends JFrame {
+    
     private JTextField textContent;
     private JTextArea textArea;
+    private JPanel contentPane;
 
-    
     ServerSocket server = null;
     Socket socket = null;
     BufferedReader in = null;
@@ -34,43 +36,49 @@ public class ChatServer {
     /**
      * Launch the application.
      */
-    public static void main(String[] args) { 
+    public static void main(String args[]) {
+        TestServer01 frame = new TestServer01();
+        frame.setVisible(true);
         
-        ChatServer cs = new ChatServer();
-        cs.frame.setVisible(true);
-        cs.setServerSocket();
+        frame.setSocketServer();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                frame.setSocketServer();
+//            }
+//        }).start();
+        
     }
-
+    
     /**
-     * Create the application.
+     * Create the frame.
      */
-    public ChatServer() {
+    public TestServer01() {
         initialize();
     }
 
-    /**
-     * Initialize the contents of the frame.
-     */
-    private void initialize() {
-        frame = new JFrame();
+    public void initialize() {
+        setTitle("채팅");
         
-        frame.setTitle("서버");
-        
-        frame.setBounds(100, 100, 450, 468);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.getContentPane().setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 500);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
         
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(12, 10, 410, 346);
-        frame.getContentPane().add(scrollPane);
+        scrollPane.setBounds(12, 10, 410, 392);
+        contentPane.add(scrollPane);
         
         textArea = new JTextArea();
         textArea.setEditable(false);
         scrollPane.setViewportView(textArea);
         
         JPanel panel = new JPanel();
-        panel.setBounds(12, 376, 434, 43);
-        frame.getContentPane().add(panel);
+        panel.setBounds(12, 407, 410, 44);
+        contentPane.add(panel);
         panel.setLayout(null);
         
         textContent = new JTextField();
@@ -79,18 +87,17 @@ public class ChatServer {
         textContent.setColumns(10);
         
         JButton btnSend = new JButton("전송");
-        btnSend.setBounds(335, 0, 75, 32);
         btnSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sendMessage();
             }
         });
+        btnSend.setBounds(335, 0, 75, 32);
         panel.add(btnSend);
     }
 
-    private void sendMessage() {
-        
+    private void sendMessage() { // 전송
         try {
             String outMessage = textContent.getText();
             out.write(outMessage + "\n");
@@ -101,14 +108,13 @@ public class ChatServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
     }
-
-    private void setServerSocket() {
-                
+    
+    public void setSocketServer() {
         try {
-            server = new ServerSocket(1002);
+            server = new ServerSocket(9999);
             textArea.append("연결 대기중...\n");
+            
             
             socket = server.accept();
             textArea.append("연결 되었습니다.\n");
@@ -141,8 +147,7 @@ public class ChatServer {
         }
         
     }
+
     
-    
-    
-    
+
 }

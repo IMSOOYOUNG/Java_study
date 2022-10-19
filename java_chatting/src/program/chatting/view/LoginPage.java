@@ -113,7 +113,7 @@ public class LoginPage {
 			JOptionPane.showMessageDialog(frame, "아이디와 비밀번호를 다시 입력해 주세요.");
 			return;
 		}
-		JOptionPane.showMessageDialog(frame, "로그인 성공");
+//		JOptionPane.showMessageDialog(frame, "로그인 성공");
 
         // 로그인 후 메인 창으로 넘어가기
 		frame.dispose();

@@ -21,6 +21,9 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
+
+import chat.practice.ChatServer;
+
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
@@ -58,6 +61,8 @@ public class ChatMain {
     private int user_member_no;
     private String user_nickname;
     private String userId;
+    private int user_port_no;
+    private int user_request;
     
     
     private JPanel panel;
@@ -72,16 +77,8 @@ public class ChatMain {
      * Launch the application.
      */
     public static void newMainFrame(Component parent, String userId) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    ChatMain window = new ChatMain(parent, userId);
-                    window.frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        ChatMain window = new ChatMain(parent, userId);
+        window.frame.setVisible(true);
     }
 
     /**
@@ -93,30 +90,21 @@ public class ChatMain {
         this.userId = userId;        
         
         initialize();
-        // 상단 이름 설정
+     
+        // 상단에 이름 설정
         List<Member> list = dao.selecIdentityname(userId);
         for (Member m : list) {
             lblUser.setText("<" + m.getNickname() + ">님");
-            
-            this.user_nickname = m.getNickname();
             this.user_member_no = m.getMember_no();
+            this.user_nickname = m.getNickname();
+            this.user_port_no = m.getPort_no();
+            this.user_request = m.getRequest();
         }
-        
+
         initializeTable();
+        initializeChat();
     }
 
-    private void initializeTable() {
-        model = new DefaultTableModel(null, COLUME_NAMES);
-
-        List<Member> list = dao.select_all_execept_user(userId);
-        for(Member m : list) {
-            Object[] row = {m.getIdentity(), m.getNickname()};
-            model.addRow(row);
-        }
-        
-        table.setModel(model);
-    }
-    
     /**
      * Initialize the contents of the frame.
      */
@@ -220,8 +208,78 @@ public class ChatMain {
         panel_1.add(btnChatting);
     }
 
-    private void chatting() {
-        ChatFrame.newChatFrame();
+    private void initializeTable() {
+        // 테이블 설정
+        model = new DefaultTableModel(null, COLUME_NAMES);
+        List<Member> list2 = dao.select_all_execept_user(userId);
+        for(Member m : list2) {
+            Object[] row = {m.getIdentity(), m.getNickname()};
+            model.addRow(row);
+        }
+        table.setModel(model);
+    }
+    
+    private void initializeChat() {
+        // member 테이블에 접속한 유저의 request 조회
+        Member member = dao.select_request(userId);
+        int client_port = member.getRequest();
+        
+        System.out.println(client_port+" 1");
+        // member client_port가 있으면 코드 진행.
+        if (client_port != 0) {
+            System.out.println(client_port+" 2");
+            ChatClientFrame.newChatClientFrame(client_port);
+        }
+       
+        // 클라이언트 채팅창 열린 후 null
+//        int result = dao.update_request_to_null(userId);
+        
+        
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    try {
+                        Member m = dao.select_request(userId);
+                        System.out.println(m.getNickname());
+                        
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+          }).start();
+        
+    }
+    
+    
+    private void chatting() { // 채팅하기 버튼
+        // 1. 선택한 행의 닉네임을 조회
+        int row = table.getSelectedRow();
+        String nickname = (String) model.getValueAt(row, 1);
+        
+        // 2. 닉네임이 내 친구 목록에 있는지 조회
+        int result = dao.select_member_nickname(user_nickname, nickname);
+        
+        // 3. 없으면 친구가 아니라는 메세지 창을 띄움
+        if (result == 0) {
+            JOptionPane.showMessageDialog(frame, "친구가 아닙니다.");
+            return;
+        }
+        
+        // 4. 상대방의 request 컬럼에 내 포트 번호 넣기 
+        int update_result = dao.update_request_to_friend_port(user_port_no, nickname);
+        System.out.println(update_result);
+        
+        // 5. 채팅창 띄우기
+        ChatServerFrame.newChatServerFrame(user_port_no);
+        
+        
+        // 채팅하기 클릭시 상대방 request에 내 port_no을 넣고 서버 소켓 열고 대기
+        // 채팅 신청을 하면 상대방이 수락할 때 채팅창이 열림
+        // 후보 2. 로그인 성공 후 메인창 생성하면 스레드가 하나 실행 
+        // 스레드는 무한 루프로 db에 select 
     }
 
     private void deleteFriend() { // 친구 삭제

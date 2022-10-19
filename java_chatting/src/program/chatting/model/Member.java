@@ -9,6 +9,7 @@ public class Member {
 		String COL_IDENTITY 	= "IDENTITY";
 		String COL_PASSWORD 	= "PASSWORD";
 		String COL_PORT_NO		= "PORT_NO";
+		String COL_REQUEST      = "REQUEST";
 	}
 	
 	private int member_no;
@@ -16,15 +17,17 @@ public class Member {
 	private String identity;
 	private String password;
 	private int port_no;
+	private int request;
 	
 	public Member() {}
 	
-	public Member(int member_no, String nickname, String identity, String password, int port_no) {
+	public Member(int member_no, String nickname, String identity, String password, int port_no, int request) {
 		this.member_no = member_no;
 		this.nickname = nickname;
 		this.identity = identity;
 		this.password = password;
 		this.port_no = port_no;
+		this.request = request;
 	}
 	
 	public int getMember_no() {
@@ -46,5 +49,9 @@ public class Member {
 	public int getPort_no() {
 		return port_no;
 	}
+	
+	public int getRequest() {
+        return request;
+    }
 
 }

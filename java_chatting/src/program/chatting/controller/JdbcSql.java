@@ -24,7 +24,7 @@ public interface JdbcSql {
     String SELECT_BY_NICKNAME = String.format("select * from %s where %s like ? and %s != ?", TBL_MEMBER, COL_NICKNAME, COL_IDENTITY);
     
     // 아이디 검색
-    String SELECT_BY_IDENTITY = String.format("select * from %s where %s like ?", TBL_MEMBER, COL_IDENTITY);
+    String SELECT_BY_IDENTITY = String.format("select * from %s where %s = ?", TBL_MEMBER, COL_IDENTITY);
     
     // 친구 목록 닉네임으로 검색
     String SELECT_BY_MEMBER_NO = String.format
@@ -45,6 +45,15 @@ public interface JdbcSql {
     
     // 아이디로 접속한 아이디 빼고 전체 검색
     String SELECT_ALL_EXECEPT_USER = String.format("select * from %s where %s != ?", TBL_MEMBER, COL_IDENTITY);
+    
+    // 친구 request에 내 포트 번호 넣기
+    String UPDATE_REQUEST_TO_FRIEND_PORT = String.format("update %s set %s = ? where %s = ?", TBL_MEMBER, COL_REQUEST, COL_NICKNAME);
+    
+    // 내 request 컬럼에 값이 있는지 아이디로 확인
+    String SELECT_REQUEST = String.format("select * from %s where %s = ?", TBL_MEMBER, COL_IDENTITY);
+    
+    // 채팅후 request 비우기
+    String UPDATE_REQUEST_TO_NULL = String.format("update %s set %s = null where %s = ?", TBL_MEMBER, COL_REQUEST, COL_IDENTITY);
 }
 
 
