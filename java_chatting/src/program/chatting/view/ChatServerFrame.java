@@ -33,20 +33,20 @@ public class ChatServerFrame extends JFrame {
     BufferedReader in = null;
     BufferedWriter out = null;
     
+    
     /**
      * Launch the application.
      */
-    public static void newChatServerFrame(int port) {
+    public static void newChatServerFrame(int port, String nickname) {
         ChatServerFrame frame = new ChatServerFrame();
         frame.setVisible(true);
         
         new Thread(new Runnable() {
             @Override
             public void run() {
-                frame.setSocketServer(port);
+                frame.setSocketServer(port, nickname);
             }
         }).start();
-        
     }
     
     /**
@@ -99,21 +99,24 @@ public class ChatServerFrame extends JFrame {
     private void sendMessage() { // 전송
         try {
             String outMessage = textContent.getText();
+            if (outMessage.equals("")) {
+                return;
+            }
+            
             out.write(outMessage + "\n");
             out.flush();
             
-            textArea.append("[서버] : " + outMessage + "\n");
+            textArea.append("나 : " + outMessage + "\n");
             textContent.setText("");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     
-    public void setSocketServer(int port) {
+    public void setSocketServer(int port, String nickname) {
         try {
-            server = new ServerSocket(9999);
+            server = new ServerSocket(port);
             textArea.append("연결 대기중...\n");
-            
             
             socket = server.accept();
             textArea.append("연결 되었습니다.\n");
@@ -124,12 +127,7 @@ public class ChatServerFrame extends JFrame {
             while(true) {
                 String inMessage = in.readLine();
                 
-                if (inMessage.equalsIgnoreCase("bye")) {
-                    System.out.println("클라이언트가 나갔습니다.");
-                    break;
-                }
-                
-                textArea.append("[클라이언트] : " + inMessage + "\n");
+                textArea.append(nickname + " : " + inMessage + "\n");
             }
                         
         } catch (IOException e) {

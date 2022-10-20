@@ -32,7 +32,7 @@ public class ChatClientFrame extends JFrame {
     /**
      * Launch the application.
      */
-    public static void newChatClientFrame(int port) {
+    public static void newChatClientFrame(int port, String nickname) {
         
         ChatClientFrame frame = new ChatClientFrame();
         frame.setVisible(true);
@@ -40,9 +40,9 @@ public class ChatClientFrame extends JFrame {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                frame.setSocketClient(port);
+                frame.setSocketClient(port, nickname);
             }
-        });
+        }).start();
         
     }
 
@@ -96,28 +96,32 @@ public class ChatClientFrame extends JFrame {
     private void sendMessage() { // 전송
         try {
             String outMessage = textContent.getText();
+            
+            if (outMessage.equals("")) {
+                return;
+            }
+            
             out.write(outMessage + "\n");
             out.flush();
             
-            textArea.append("[클라이언트] : " + outMessage + "\n");
+            textArea.append("나 : " + outMessage + "\n");
             textContent.setText("");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     
-    public void setSocketClient(int port) {
+    public void setSocketClient(int port, String nickname) {
         try {
-            socket = new Socket("localhost", 9999);
+            socket = new Socket("192.168.20.28", port);
             textArea.append("연결 완료! \n");
-            
             
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             
             while(true) {
                 String inMsg = in.readLine();
-                textArea.append("[서버] : " + inMsg + "\n");
+                textArea.append(nickname + " : " + inMsg + "\n");
             }
                         
         } catch (IOException e) {

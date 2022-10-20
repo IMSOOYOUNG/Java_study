@@ -442,8 +442,7 @@ public class MemberDaoImpl implements MemberDao {
         
         return list;
     }
-
-    
+ 
     @Override
     public int update_request_to_friend_port(int port_no, String member_nickname) {
         int result = 0;
@@ -545,7 +544,45 @@ public class MemberDaoImpl implements MemberDao {
         return result;
     }
 	
-    
+    public Member select_port_no(int no) {
+        Member member = new Member();
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            DriverManager.registerDriver(new OracleDriver());
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            stmt = conn.prepareStatement(SELECT_PORT_NO);
+            stmt.setInt(1, no);
+            
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                int member_no   = rs.getInt(COL_MEMBER_NO);
+                String nickname = rs.getString(COL_NICKNAME);
+                String id       = rs.getString(COL_IDENTITY);
+                String password = rs.getString(COL_PASSWORD);
+                int port_no     = rs.getInt(COL_PORT_NO);
+                int request     = rs.getInt(COL_REQUEST);
+                
+                member = new Member(member_no, nickname, id, password, port_no, request);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return member;
+    }
     
     
 }

@@ -78,7 +78,9 @@ public class ChatMain {
      */
     public static void newMainFrame(Component parent, String userId) {
         ChatMain window = new ChatMain(parent, userId);
-        window.frame.setVisible(true);
+//        window.frame.setVisible(true);
+        
+      
     }
 
     /**
@@ -102,7 +104,7 @@ public class ChatMain {
         }
 
         initializeTable();
-        initializeChat();
+        realTime();
     }
 
     /**
@@ -206,8 +208,33 @@ public class ChatMain {
         panel_1.add(btnAddFriend);
         panel_1.add(btnDeleteFriend);
         panel_1.add(btnChatting);
+        
+        frame.setVisible(true);
     }
 
+    
+    public void realTime() { // 5초에 한번씩 db에 request가 들어왔는지 확인하기
+        
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    try {
+                        Member m = dao.select_request(userId);
+                        
+                        if (m.getPort_no() != 0) {
+                            initializeChat();
+                        }
+                        
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+          }).start();
+    }
+    
     private void initializeTable() {
         // 테이블 설정
         model = new DefaultTableModel(null, COLUME_NAMES);
@@ -224,35 +251,32 @@ public class ChatMain {
         Member member = dao.select_request(userId);
         int client_port = member.getRequest();
         
-        System.out.println(client_port+" 1");
-        // member client_port가 있으면 코드 진행.
-        if (client_port != 0) {
-            System.out.println(client_port+" 2");
-            ChatClientFrame.newChatClientFrame(client_port);
+        // member client_port가 없으면 종료.
+        if (client_port == 0) {
+            return;
         }
-       
-        // 클라이언트 채팅창 열린 후 null
-//        int result = dao.update_request_to_null(userId);
         
+        // 상대방이름 조회
+        Member otherMember = dao.select_port_no(client_port);
+        String nickname = otherMember.getNickname();
         
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(true) {
-                    try {
-                        Member m = dao.select_request(userId);
-                        System.out.println(m.getNickname());
-                        
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-          }).start();
+        // 채팅 요청 메세지 알림
+        int confirm = JOptionPane.showConfirmDialog(
+                frame,
+                nickname + "님이 채팅을 수락하시겠습니까?",
+                "채팅 요청",
+                JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.NO_OPTION) {
+            dao.update_request_to_null(userId);
+            return;
+        }
         
+        // 채팅창 열기
+        ChatClientFrame.newChatClientFrame(client_port, nickname);
+        
+        // 클라이언트 채팅창 열린 후 request컬럼 비우기
+        dao.update_request_to_null(userId);    
     }
-    
     
     private void chatting() { // 채팅하기 버튼
         // 1. 선택한 행의 닉네임을 조회
@@ -270,17 +294,11 @@ public class ChatMain {
         
         // 4. 상대방의 request 컬럼에 내 포트 번호 넣기 
         int update_result = dao.update_request_to_friend_port(user_port_no, nickname);
-        System.out.println(update_result);
         
         // 5. 채팅창 띄우기
-        ChatServerFrame.newChatServerFrame(user_port_no);
-        
-        
-        // 채팅하기 클릭시 상대방 request에 내 port_no을 넣고 서버 소켓 열고 대기
-        // 채팅 신청을 하면 상대방이 수락할 때 채팅창이 열림
-        // 후보 2. 로그인 성공 후 메인창 생성하면 스레드가 하나 실행 
-        // 스레드는 무한 루프로 db에 select 
+        ChatServerFrame.newChatServerFrame(user_port_no, nickname);
     }
+    
 
     private void deleteFriend() { // 친구 삭제
         // 1. 선택한 행의 닉네임을 조회
@@ -315,6 +333,7 @@ public class ChatMain {
         }
     }
 
+    
     private void addFriend() { // 친구 추가
         // 1. 선택한 행의 닉네임을 조회
         int row = table.getSelectedRow();
@@ -346,6 +365,7 @@ public class ChatMain {
         }
     }
     
+    
     private void userSearch() { // 검색
         String text = textSearch.getText();
         if (text.equals("")) {
@@ -368,11 +388,13 @@ public class ChatMain {
         textSearch.setText("");
     }
     
+    
     private void readAll() { // 모든 사용자
         initializeTable();
         btnReadAll.setBackground(new Color(255, 255, 255));
         btnReadFriend.setBackground(new Color(240, 240, 240));
     }
+    
     
     private void friendList() { // 친구 목록
         btnReadFriend.setBackground(new Color(255, 255, 255));

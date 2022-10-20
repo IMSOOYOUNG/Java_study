@@ -54,6 +54,11 @@ public interface JdbcSql {
     
     // 채팅후 request 비우기
     String UPDATE_REQUEST_TO_NULL = String.format("update %s set %s = null where %s = ?", TBL_MEMBER, COL_REQUEST, COL_IDENTITY);
+
+
+    // 포트 넘버 검색
+    String SELECT_PORT_NO = String.format("select * from %s where %s = ?", TBL_MEMBER, COL_PORT_NO);
+    
 }
 
 

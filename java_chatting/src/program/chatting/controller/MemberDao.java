@@ -110,5 +110,12 @@ public interface MemberDao {
     int update_request_to_null(String identity);
     
     
+    /**
+     * 포트 넘버로 조회
+     * @param port_no 검색하고 싶은 포터 번호
+     * @return
+     */
+    Member select_port_no(int port_no);
+    
     
 }
